@@ -127,12 +127,13 @@ class Target:
     def __init__ (self, screen):
         self.points = 0
         self.screen = screen
-        self.live = 1
+        
         
         self.new_target()
 
     def new_target(self):
         """ Инициализация новой цели. """
+        self.live = 1
         x = self.x = randint(600, 780)
         y = self.y = randint(300, 550)
         r = self.r = randint(2, 50)
