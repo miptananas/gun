@@ -56,12 +56,7 @@ class Ball:
         
 
     def draw(self):
-        pygame.draw.circle(
-            self.screen,
-            self.color,
-            (self.x, self.y),
-            self.r
-        )
+        circle(self.screen, self.color, (self.x, self.y), self.r)
 
     def hittest(self, obj):
         
@@ -82,6 +77,11 @@ class Gun:
         self.f2_on = 0
         self.an = 1
         self.color = GREY
+        self.x = 40 
+        self.length = 30+0.5*self.f2_power
+        self.x2 = self.x + self.length*math.cos(self.an)
+        self.y = 450
+        self.vx = randint(1, 3)
 
     def fire2_start(self, event):
         self.f2_on = 1
@@ -104,17 +104,31 @@ class Gun:
         self.f2_power = 10
 
     def targetting(self, event):
-        """Прицеливание. Зависит от положения мыши."""
+        """Прицеливание. Зависит от положения мыши. При заряжании пушка становится красной"""
         if event:
             self.an = math.atan2((event.pos[1]-450), (event.pos[0]-40))
         if self.f2_on:
             self.color = RED
         else:
             self.color = GREY
+            
+    def move(self):
+        """Пушка едет с течением времени.
+
+        Метод описывает перемещение пушки за один кадр перерисовки. То есть, обновляет значения
+        self.x и self.y с учетом скоростей self.vx и self.vy и границ линии, по которой перемещется пушка.
+        """
+        
+        self.x += self.vx
+        self.x2 += self.vx
+        
+        if (self.x < 40 or self.x > 100):
+            self.vx = -self.vx
 
     def draw(self):
-        length = 30+0.5*self.f2_power
-        line(self.screen, self.color, (40, 450), (40+length*math.cos(self.an), 450+length*math.sin(self.an)), 10)
+        line(self.screen, self.color, (self.x, self.y), (self.x + self.length*math.cos(self.an), self.y + self.length*math.sin(self.an)), 10)
+        circle(self.screen, self.color, (self.x, self.y), 6)
+        circle(self.screen, (0, 0, 0), (self.x, self.y), 6, 2)
 
     def power_up(self):
         if self.f2_on:
@@ -194,6 +208,7 @@ while not finished:
     target2.draw()
     for b in balls:
         b.draw()
+    gun.move()
     target1.move()
     target2.move()
     pygame.display.update()
